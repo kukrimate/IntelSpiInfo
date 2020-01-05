@@ -55,10 +55,11 @@ static uint8_t PciCfgRead8(uint32_t addr)
 
 /* SPI controller registers */
 #define HSFS 0x3804
-#define PR0  0x3878
-#define PR1  0x387c
-#define PR2  0x3880
-#define PR3  0x3884
+#define PR0  0x3874
+#define PR1  0x3878
+#define PR2  0x387c
+#define PR3  0x3880
+#define PR4  0x3884
 
 /* MMIO access */
 static uint32_t MmioRead32(uint32_t addr)
@@ -99,7 +100,7 @@ efi_main(efi_handle_t image_handle, efi_system_table_t *system_table)
 	uint16_t hsfs;
 
 	size_t i;
-	uint32_t pr[4];
+	uint32_t pr[5];
 
 	status = EFI_SUCCESS;
 	init_util(image_handle, system_table);
@@ -121,7 +122,7 @@ efi_main(efi_handle_t image_handle, efi_system_table_t *system_table)
 	Print(L"SPI Controller registers:\r\n");
 	Print(L"  HSFS:      0x%x\r\n", hsfs);
 	Print(L"    FLOCKDN: %u\r\n", 0 < (hsfs & (1 << 15)));
-	for (i = 0; i < 4; ++i) {
+	for (i = 0; i < 5; ++i) {
 		pr[i] = MmioRead32(rcba + PR0 + i * 4);
 		Print(L"  PR%u:       0x%x\r\n", i, pr[i]);
 		Print(L"    WP/RP:   %u/%u\r\n",

@@ -1,6 +1,5 @@
 #include <efi.h>
 #include <efiutil.h>
-#include "EfiPrint.h"
 #include "PortIo.h"
 
 #define PCI_ADDR(bus, dev, fun, offs) \
@@ -86,13 +85,13 @@ static uint8_t MmioRead8(uint32_t addr)
 	return *(uint8_t *) p;
 }
 
-efi_status_t
-efi_func
-efi_main(efi_handle_t image_handle, efi_system_table_t *system_table)
+efi_status
+efiapi
+efi_main(efi_handle image_handle, efi_system_table *system_table)
 {
-	efi_status_t status;
-	uintn_t index;
-	efi_in_key_t key;
+	efi_status status;
+	efi_size index;
+	efi_in_key key;
 
 	uint8_t  bios_cntl;
 	uint32_t rcba;
@@ -104,35 +103,35 @@ efi_main(efi_handle_t image_handle, efi_system_table_t *system_table)
 
 	status = EFI_SUCCESS;
 	init_util(image_handle, system_table);
-	Print(L"IntelSpiInfo (U)EFI\r\n");
-	Print(L"(C) Mate Kukri, 2020\r\n");
+	print(L"IntelSpiInfo (U)EFI\r\n");
+	print(L"(C) Mate Kukri, 2020\r\n");
 
 	bios_cntl = PciCfgRead8(BIOS_CNTL) & 0x3f;
 	rcba      = PciCfgRead32(RCBA)     & 0xffffc000;
 
-	Print(L"LPC Controller registers:\r\n");
-	Print(L"  BIOS_CNTL: 0x%x\r\n", bios_cntl);
-	Print(L"    SMM_BWP: %u\r\n", 0 < (bios_cntl & (1 << 5)));
-	Print(L"    BLE:     %u\r\n", 0 < (bios_cntl & (1 << 1)));
-	Print(L"    BIOSWE:  %u\r\n", 0 < (bios_cntl & (1 << 0)));
-	Print(L"  RCBA:      0x%x\r\n", rcba);
+	print(L"LPC Controller registers:\r\n");
+	print(L"  BIOS_CNTL: 0x%x\r\n", bios_cntl);
+	print(L"    SMM_BWP: %u\r\n", 0 < (bios_cntl & (1 << 5)));
+	print(L"    BLE:     %u\r\n", 0 < (bios_cntl & (1 << 1)));
+	print(L"    BIOSWE:  %u\r\n", 0 < (bios_cntl & (1 << 0)));
+	print(L"  RCBA:      0x%x\r\n", rcba);
 
 	hsfs = MmioRead16(rcba + HSFS);
 
-	Print(L"SPI Controller registers:\r\n");
-	Print(L"  HSFS:      0x%x\r\n", hsfs);
-	Print(L"    FLOCKDN: %u\r\n", 0 < (hsfs & (1 << 15)));
+	print(L"SPI Controller registers:\r\n");
+	print(L"  HSFS:      0x%x\r\n", hsfs);
+	print(L"    FLOCKDN: %u\r\n", 0 < (hsfs & (1 << 15)));
 	for (i = 0; i < 5; ++i) {
 		pr[i] = MmioRead32(rcba + PR0 + i * 4);
-		Print(L"  PR%u:       0x%x\r\n", i, pr[i]);
-		Print(L"    WP/RP:   %u/%u\r\n",
+		print(L"  PR%u:       0x%x\r\n", i, pr[i]);
+		print(L"    WP/RP:   %u/%u\r\n",
 			0 < (pr[i] & 0x80000000), 0 < (pr[i] & 0x8000));
-		Print(L"    Range:   0x%x-0x%x\r\n",
+		print(L"    Range:   0x%x-0x%x\r\n",
 			(pr[i] & 0x1fff) << 12, (pr[i] & 0x1fff0000) >> 4 | 0xfff);
 	}
 
 	/* Wait for a keypress */
-	Print(L"Press any key to exit\r\n");
+	print(L"Press any key to exit\r\n");
 	bs->wait_for_event(1, &st->con_in->wait_for_key, &index);
 	st->con_in->read_key(st->con_in, &key);
 

@@ -2,7 +2,7 @@ include ../tools/Makefile.efi
 
 all: IntelSpiInfo.efi
 
-IntelSpiInfo.efi: IntelSpiInfo.o EfiPrint.o
+IntelSpiInfo.efi: IntelSpiInfo.o
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 copy: IntelSpiInfo.efi

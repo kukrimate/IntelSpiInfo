@@ -102,40 +102,40 @@ efi_main(efi_handle image_handle, efi_system_table *system_table)
 	uint32_t pr[5];
 
 	status = EFI_SUCCESS;
-	init_util(image_handle, system_table);
-	print(L"IntelSpiInfo (U)EFI\r\n");
-	print(L"(C) Mate Kukri, 2020\r\n");
+	efi_init(image_handle, system_table);
+
+	efi_print(L"IntelSpiInfo (U)EFI\r\n");
+	efi_print(L"(C) Mate Kukri, 2020\r\n");
 
 	bios_cntl = PciCfgRead8(BIOS_CNTL) & 0x3f;
 	rcba      = PciCfgRead32(RCBA)     & 0xffffc000;
 
-	print(L"LPC Controller registers:\r\n");
-	print(L"  BIOS_CNTL: 0x%x\r\n", bios_cntl);
-	print(L"    SMM_BWP: %u\r\n", 0 < (bios_cntl & (1 << 5)));
-	print(L"    BLE:     %u\r\n", 0 < (bios_cntl & (1 << 1)));
-	print(L"    BIOSWE:  %u\r\n", 0 < (bios_cntl & (1 << 0)));
-	print(L"  RCBA:      0x%x\r\n", rcba);
+	efi_print(L"LPC Controller registers:\r\n");
+	efi_print(L"  BIOS_CNTL: 0x%x\r\n", bios_cntl);
+	efi_print(L"    SMM_BWP: %u\r\n", 0 < (bios_cntl & (1 << 5)));
+	efi_print(L"    BLE:     %u\r\n", 0 < (bios_cntl & (1 << 1)));
+	efi_print(L"    BIOSWE:  %u\r\n", 0 < (bios_cntl & (1 << 0)));
+	efi_print(L"  RCBA:      0x%x\r\n", rcba);
 
 	hsfs = MmioRead16(rcba + HSFS);
 
-	print(L"SPI Controller registers:\r\n");
-	print(L"  HSFS:      0x%x\r\n", hsfs);
-	print(L"    FLOCKDN: %u\r\n", 0 < (hsfs & (1 << 15)));
+	efi_print(L"SPI Controller registers:\r\n");
+	efi_print(L"  HSFS:      0x%x\r\n", hsfs);
+	efi_print(L"    FLOCKDN: %u\r\n", 0 < (hsfs & (1 << 15)));
 	for (i = 0; i < 5; ++i) {
 		pr[i] = MmioRead32(rcba + PR0 + i * 4);
-		print(L"  PR%u:       0x%x\r\n", i, pr[i]);
-		print(L"    WP/RP:   %u/%u\r\n",
+		efi_print(L"  PR%u:       0x%x\r\n", i, pr[i]);
+		efi_print(L"    WP/RP:   %u/%u\r\n",
 			0 < (pr[i] & 0x80000000), 0 < (pr[i] & 0x8000));
-		print(L"    Range:   0x%x-0x%x\r\n",
+		efi_print(L"    Range:   0x%x-0x%x\r\n",
 			(pr[i] & 0x1fff) << 12, (pr[i] & 0x1fff0000) >> 4 | 0xfff);
 	}
 
 	/* Wait for a keypress */
-	print(L"Press any key to exit\r\n");
+	efi_print(L"Press any key to exit\r\n");
 	bs->wait_for_event(1, &st->con_in->wait_for_key, &index);
 	st->con_in->read_key(st->con_in, &key);
 
 done:
-	fini_util();
 	return status;
 }

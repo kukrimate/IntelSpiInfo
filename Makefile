@@ -1,5 +1,8 @@
 include ../tools/Makefile.efi
 
+# Subsystem ID (EFI Application)
+SUBSYSTEM := 10
+
 all: IntelSpiInfo.efi
 
 IntelSpiInfo.efi: IntelSpiInfo.o

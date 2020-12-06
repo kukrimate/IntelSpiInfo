@@ -1,5 +1,5 @@
-LIBEFI = ..
-include ../tools/Makefile.efi
+LIBEFI = libefi
+include libefi/tools/Makefile.efi
 
 # Subsystem ID (EFI Application)
 SUBSYSTEM := 10

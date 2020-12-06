@@ -102,7 +102,7 @@ efi_main(efi_handle image_handle, efi_system_table *system_table)
 		pr[i] = MmioRead32(rcba + PR0 + i * 4);
 		efi_print(L"  PR%d:       0x%x\n", i, pr[i]);
 		efi_print(L"    WP/RP:   %d/%d\n",
-			0 < (pr[i] & 0x80000000), 0 < (pr[i] & 0x8000));
+			0 != (pr[i] & 0x80000000), 0 != (pr[i] & 0x8000));
 		efi_print(L"    Range:   0x%x-0x%x\n",
 			(pr[i] & 0x1fff) << 12, (pr[i] & 0x1fff0000) >> 4 | 0xfff);
 	}

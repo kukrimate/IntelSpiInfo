@@ -1,18 +1,17 @@
+ARCH   = x86_64
 LIBEFI = libefi
-include libefi/tools/Makefile.efi
+include libefi/tools/Makefile-$(ARCH).efi
 
 # Subsystem ID (EFI Application)
-SUBSYSTEM := 10
+SUBSYSTEM = 10
 
-all: IntelSpiInfo.efi
+APP = IntelSpiInfo$(EXT)
+OBJ = IntelSpiInfo.o
 
-IntelSpiInfo.efi: IntelSpiInfo.o
-	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+all: $(APP)
 
-copy: IntelSpiInfo.efi
-	sudo mount /dev/sdc1 /mnt
-	sudo cp IntelSpiInfo.efi /mnt/efi/boot/bootx64.efi
-	sudo umount /mnt
+$(APP): $(OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
 	rm -f *.o *.efi
